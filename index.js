@@ -12,20 +12,32 @@ mongoose.connect('mongodb://127.0.0.1:27017/test')
 const userSchema = new mongoose.Schema({
     name: String,
     email: String,
-    password: String
+    password: String,
+    cart: Array
 });
 
 const User = mongoose.model('User', userSchema)
 
+const itemsSchema = new mongoose.Schema({
+    pdtNamae: String,
+    img: String,
+    desc: String,
+    cost: String,
+    opts: Array
+})
+
+const items = mongoose.model('items', itemsSchema);
 
 server.post('/register', async (req, res)=>{
     const doc = await User.find({email: req.body.email})
-    if(doc==[]){
+    if(!doc[0]){
         let user = new User();
         user.name = req.body.name
         user.email = req.body.email
         user.password = req.body.pswd
+        user.cart = []
 
+        user.save()
         res.send({code: 'ok'})
     }
     else{
@@ -42,6 +54,11 @@ server.post('/login', async (req, res)=>{
     else{
         res.send({code:'incorrect username or password'})
     }
+})
+
+server.get('/items', async (req, res)=>{
+    const data = await items.find({})
+    res.send(data);
 })
 
 server.listen(8080, ()=>{

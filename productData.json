@@ -1,0 +1,14 @@
+[{
+    "pdtName": "Phone",
+    "img": "",
+    "desc": "A mobile phone for all your uses!!",
+    "cost": "$2000",
+    "opts": ["red", "blue"]
+},
+{
+    "pdtName": "Laptop",
+    "img": "",
+    "desc": "A laptop for all your uses!!",
+    "cost": "$2000",
+    "opts": ["white", "blue"]
+}]
