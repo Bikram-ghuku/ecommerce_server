@@ -58,7 +58,7 @@ server.post('/login', async (req, res)=>{
 
 server.get('/items', async (req, res)=>{
     const data = await items.find({})
-    res.send(data);
+    res.send(JSON.stringify(data));
 })
 
 server.listen(8080, ()=>{
