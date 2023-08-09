@@ -13,7 +13,8 @@ const userSchema = new mongoose.Schema({
     name: String,
     email: String,
     password: String,
-    cart: Array
+    cart: Array,
+    type: String
 });
 
 const User = mongoose.model('User', userSchema)
@@ -36,6 +37,7 @@ server.post('/register', async (req, res)=>{
         user.email = req.body.email
         user.password = req.body.pswd
         user.cart = []
+        user.type = req.body.type
 
         user.save()
         res.send({code: 'ok'})
@@ -49,7 +51,7 @@ server.post('/login', async (req, res)=>{
     const doc = await User.find({email: req.body.email, password: req.body.pswd})
     var resData = doc[0]
     if(resData){
-        res.send({name:resData.name, email:resData.email, code:'ok'})
+        res.send({name:resData.name, email:resData.email, code:'ok', type: resData.type})
     }
     else{
         res.send({code:'incorrect username or password'})
