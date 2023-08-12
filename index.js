@@ -51,7 +51,7 @@ server.post('/login', async (req, res)=>{
     const doc = await User.find({email: req.body.email, password: req.body.pswd})
     var resData = doc[0]
     if(resData){
-        res.send({name:resData.name, email:resData.email, code:'ok', type: resData.type})
+        res.send({name:resData.name, email:resData.email, code:'ok', type: resData.type, id: resData._id})
     }
     else{
         res.send({code:'incorrect username or password'})
@@ -61,6 +61,20 @@ server.post('/login', async (req, res)=>{
 server.get('/items', async (req, res)=>{
     const data = await items.find({})
     res.send(JSON.stringify(data));
+})
+
+server.post('/cartItems', async (req, res)=>{
+    const doc = await User.find({_id: req.body.id})
+    if(doc[0].cart){
+        res.send(doc[0].cart)
+    }
+})
+
+server.post('/addCartItems', async(req, res) => {
+    const doc = await User.find({_id: req.body.uid})
+    var cartDet = doc[0].cart
+    cartDet.push(req.body.pid)
+    await User.updateOne({_id : req.body.uid}, {cart: cartDet})
 })
 
 server.listen(8080, ()=>{
