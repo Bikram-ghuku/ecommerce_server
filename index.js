@@ -27,7 +27,7 @@ const itemsSchema = new mongoose.Schema({
     opts: Array
 })
 
-const items = mongoose.model('items', itemsSchema);
+const Items = mongoose.model('items', itemsSchema);
 
 server.post('/register', async (req, res)=>{
     const doc = await User.find({email: req.body.email})
@@ -59,7 +59,7 @@ server.post('/login', async (req, res)=>{
 })
 
 server.get('/items', async (req, res)=>{
-    const data = await items.find({})
+    const data = await Items.find({})
     res.send(JSON.stringify(data));
 })
 
@@ -73,7 +73,8 @@ server.post('/cartItems', async (req, res)=>{
 server.post('/addCartItems', async(req, res) => {
     const doc = await User.find({_id: req.body.uid})
     var cartDet = doc[0].cart
-    cartDet.push(req.body.pid)
+    const itemDoc = await Items.find({_id: req.body.pid});
+    cartDet.push(itemDoc[0])
     await User.updateOne({_id : req.body.uid}, {cart: cartDet})
 })
 
