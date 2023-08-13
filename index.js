@@ -7,7 +7,7 @@ const dotenv = require("dotenv").config();
 const server = express()
 server.use(cors())
 server.use(bodyParser.json())
-mongoose.connect(dotenv.parsed.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('DataBase Connected!'));
 
 const userSchema = new mongoose.Schema({
@@ -81,6 +81,6 @@ server.post('/addCartItems', async(req, res) => {
     await User.updateOne({_id : req.body.uid}, {cart: cartDet})
 })
 
-server.listen(dotenv.parsed.PORT, ()=>{
-    console.log(`server started on ${dotenv.parsed.PORT}`);
+server.listen(process.env.PORT, ()=>{
+    console.log(`server started on ${process.env.PORT}`);
 })
