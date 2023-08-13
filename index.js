@@ -23,8 +23,10 @@ const itemsSchema = new mongoose.Schema({
     pdtNamae: String,
     img: String,
     desc: String,
-    cost: String,
-    opts: Array
+    cost: Number,
+    opts: Array,
+    dispType: String,
+    seller: String
 })
 
 const Items = mongoose.model('items', itemsSchema);
@@ -65,7 +67,7 @@ server.get('/items', async (req, res)=>{
 
 server.post('/cartItems', async (req, res)=>{
     const doc = await User.find({_id: req.body.id})
-    if(doc[0].cart){
+    if(doc[0]){
         res.send(doc[0].cart)
     }
 })
