@@ -32,6 +32,13 @@ const itemsSchema = new mongoose.Schema({
 
 const Items = mongoose.model('items', itemsSchema);
 
+const sellerSchema = new mongoose.Schema({
+    name: String,
+    id: String,
+})
+
+const Seller = mongoose.model('sellers', sellerSchema);
+
 server.post('/register', async (req, res)=>{
     const doc = await User.find({email: req.body.email})
     if(!doc[0]){
@@ -41,8 +48,13 @@ server.post('/register', async (req, res)=>{
         user.password = req.body.pswd
         user.cart = []
         user.type = req.body.type
-
         user.save()
+        if(req.body.type == "Seller"){
+            let seller = new Seller();
+            seller.name = req.body.name
+            seller.id = user._id
+            seller.save()
+        }
         res.send({code: 'ok'})
     }
     else{
@@ -79,6 +91,15 @@ server.post('/addCartItems', async(req, res) => {
     const itemDoc = await Items.find({_id: req.body.pid});
     cartDet.push(itemDoc[0])
     await User.updateOne({_id : req.body.uid}, {cart: cartDet})
+})
+
+server.get('/seller', async (req, res)=>{
+    const data = await Seller.find({});
+    const dict = {}
+    for(let i=0; i<data.length; i++){
+        dict[data[i].id] = data[i].name
+    }
+    res.send(JSON.stringify(dict));
 })
 
 server.listen(process.env.PORT, ()=>{
