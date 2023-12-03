@@ -55,7 +55,8 @@ const addressSchema = new mongoose.Schema({
     pin: String,
     city: String,
     state: String,
-    country: String
+    country: String,
+    phone: String
 })
 
 const Address = mongoose.model('address', addressSchema);
