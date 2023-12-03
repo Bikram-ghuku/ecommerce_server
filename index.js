@@ -131,6 +131,18 @@ server.post('/addAddress', async (req, res)=>{
     address.city = req.body.city
     address.state = req.body.state
     address.country = req.body.country
+    address.save()
+    res.send({code: 'ok'})
+    const user = await User.find({_id: req.body.uid})
+    var addressAr = user[0].address
+    addressAr.push(address._id)
+    user[0].address = addressAr
+    user[0].save()
+})
+
+server.post('/getAddress', async (req, res)=>{
+    const doc = await Address.find({uid: req.body.uid})
+    res.send(doc)
 })
 
 server.listen(process.env.PORT, ()=>{
