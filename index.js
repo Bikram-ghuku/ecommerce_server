@@ -136,13 +136,34 @@ server.post('/addAddress', async (req, res)=>{
     const user = await User.find({_id: req.body.uid})
     var addressAr = user[0].address
     addressAr.push(address._id)
-    user[0].address = addressAr
-    user[0].save()
+    await User.updateOne({_id : req.body.uid}, {address: addressAr})
 })
 
 server.post('/getAddress', async (req, res)=>{
     const doc = await Address.find({uid: req.body.uid})
     res.send(doc)
+})
+
+server.post('/removeCart', async (req, res)=>{
+    const doc = await User.find({_id: req.body.uid})
+    var cartDet = doc[0].cart
+    var newCart = []
+    var flag = false
+    for(let i=0; i<cartDet.length; i++){
+        if(!flag){
+            if(cartDet[i]._id != req.body.pid){
+                newCart.push(cartDet[i])
+            }
+            else{
+                flag = true
+            }
+        }
+        else{
+            newCart.push(cartDet[i])
+        }
+    }
+    await User.updateOne({_id : req.body.uid}, {cart: newCart})
+    res.send({code: 'ok'})
 })
 
 server.listen(process.env.PORT, ()=>{
