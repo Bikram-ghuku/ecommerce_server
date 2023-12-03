@@ -70,6 +70,7 @@ server.post('/register', async (req, res)=>{
         user.password = req.body.pswd
         user.cart = []
         user.type = req.body.type
+        user.address = []
         user.save()
         if(req.body.type == "Seller"){
             let seller = new Seller();
@@ -128,15 +129,16 @@ server.post('/addAddress', async (req, res)=>{
     let address = new Address();
     address.uid = req.body.uid
     address.address = req.body.address
-    address.pin = req.body.pin
+    address.pin = req.body.pincode
     address.city = req.body.city
     address.state = req.body.state
     address.country = req.body.country
-    address.save()
+    address.phone = req.body.phone
     res.send({code: 'ok'})
     const user = await User.find({_id: req.body.uid})
     var addressAr = user[0].address
     addressAr.push(address._id)
+    address.save()
     await User.updateOne({_id : req.body.uid}, {address: addressAr})
 })
 
