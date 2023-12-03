@@ -15,7 +15,8 @@ const userSchema = new mongoose.Schema({
     email: String,
     password: String,
     cart: Array,
-    type: String
+    type: String,
+    address: Array
 });
 
 const User = mongoose.model('User', userSchema)
@@ -38,6 +39,26 @@ const sellerSchema = new mongoose.Schema({
 })
 
 const Seller = mongoose.model('sellers', sellerSchema);
+
+const orderSchema = new mongoose.Schema({
+    uid: String,
+    pid: String,
+    qty: Number,
+    status: String
+})
+
+const Order = mongoose.model('orders', orderSchema);
+
+const addressSchema = new mongoose.Schema({
+    uid: String,
+    address: String,
+    pin: String,
+    city: String,
+    state: String,
+    country: String
+})
+
+const Address = mongoose.model('address', addressSchema);
 
 server.post('/register', async (req, res)=>{
     const doc = await User.find({email: req.body.email})
@@ -100,6 +121,16 @@ server.get('/seller', async (req, res)=>{
         dict[data[i].id] = data[i].name
     }
     res.send(JSON.stringify(dict));
+})
+
+server.post('/addAddress', async (req, res)=>{
+    let address = new Address();
+    address.uid = req.body.uid
+    address.address = req.body.address
+    address.pin = req.body.pin
+    address.city = req.body.city
+    address.state = req.body.state
+    address.country = req.body.country
 })
 
 server.listen(process.env.PORT, ()=>{
