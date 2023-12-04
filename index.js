@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema)
 
 const itemsSchema = new mongoose.Schema({
-    pdtNamae: String,
+    pdtName: String,
     img: String,
     desc: String,
     cost: Number,
@@ -43,8 +43,10 @@ const Seller = mongoose.model('sellers', sellerSchema);
 const orderSchema = new mongoose.Schema({
     uid: String,
     pid: String,
+    sid: String,
     qty: Number,
-    status: String
+    status: String,
+    address: String
 })
 
 const Order = mongoose.model('orders', orderSchema);
@@ -172,6 +174,56 @@ server.post('/removeCart', async (req, res)=>{
 server.post('/getProducts', async (req, res)=>{
     const data = await Items.find({seller: req.body.uid})
     res.send(JSON.stringify(data));
+})
+
+server.post('/addOrder', async (req, res)=>{
+    const user = await User.find({_id: req.body.uid})
+    var items = {};
+    var cartDet = user[0].cart
+    for(var i=0; i<cartDet.length; i++){
+        var currId = cartDet[i]._id
+        if(items[currId]){
+            items[currId] += 1
+        }
+        else{
+            items[currId] = 1
+        }
+    }
+    var oderIds = []
+    for(var key in items){
+        let order = new Order();
+        const item = await Items.find({_id: key})
+        order.sid = item[0].seller
+        order.uid = req.body.uid
+        order.pid = key
+        order.qty = items[key]
+        order.status = "Pending"
+        order.address = req.body.address
+        order.save()
+        oderIds.push(order._id)
+    }
+    await User.updateOne({_id : req.body.uid}, {cart: []})
+    res.send({code: 'ok', order: oderIds})
+})
+
+server.post('/getOrders', async (req, res)=>{
+    const OrData = await Order.find({sid: req.body.uid})
+    var dict = []
+    for(var i=0; i<OrData.length; i++){
+        const pData = await Items.find({_id: OrData[i].pid})
+        const uData = await User.find({_id: OrData[i].uid})
+        const addData = await Address.find({_id: OrData[i].address})
+        var data = {}
+        data._id = OrData[i]._id
+        data.qty = OrData[i].qty
+        data.status = OrData[i].status
+        data.pdtName = pData[0].pdtName
+        data.user = uData[0].name
+        data.address = addData[0].address
+        dict.push(data)
+    }
+    
+    res.send(JSON.stringify(dict));
 })
 
 server.listen(process.env.PORT, ()=>{
