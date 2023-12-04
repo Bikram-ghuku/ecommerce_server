@@ -169,6 +169,11 @@ server.post('/removeCart', async (req, res)=>{
     res.send({code: 'ok'})
 })
 
+server.post('/getProducts', async (req, res)=>{
+    const data = await Items.find({seller: req.body.uid})
+    res.send(JSON.stringify(data));
+})
+
 server.listen(process.env.PORT, ()=>{
     console.log(`server started on ${process.env.PORT}`);
 })
