@@ -99,7 +99,7 @@ server.post('/login', async (req, res)=>{
 })
 
 server.get('/items', async (req, res)=>{
-    const data = await Items.find({})
+    const data = await Items.find({dispType :{$not: {$eq: "private"}}})
     res.send(JSON.stringify(data));
 })
 
@@ -224,6 +224,19 @@ server.post('/getOrders', async (req, res)=>{
     }
     
     res.send(JSON.stringify(dict));
+})
+
+server.post('/addProduct', async (req, res)=>{
+    let item = new Items();
+    item.pdtName = req.body.pdtName
+    item.img = req.body.img
+    item.desc = req.body.desc
+    item.cost = req.body.cost
+    item.opts = []
+    item.dispType = req.body.dispType
+    item.seller = req.body.uid
+    item.save()
+    res.send({code: 'ok'})
 })
 
 server.listen(process.env.PORT, ()=>{
