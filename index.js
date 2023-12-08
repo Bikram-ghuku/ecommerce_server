@@ -239,6 +239,36 @@ server.post('/addProduct', async (req, res)=>{
     res.send({code: 'ok'})
 })
 
+server.post('/delProduct', async (req, res)=>{
+    await Items.deleteOne({_id: req.body.pid})
+    res.send({code: 'ok'})
+})
+
+server.post('/myOrders', async (req, res)=>{
+    const orData = await Order.find({uid: req.body.uid})
+    var dict = []
+    for(var i=0; i<orData.length; i++){
+        const pData = await Items.find({_id: orData[i].pid})
+        const addData = await Address.find({_id: orData[i].address})
+        var data = {}
+        data._id = orData[i]._id
+        data.qty = orData[i].qty
+        data.status = orData[i].status
+        data.pdtName = pData[0].pdtName
+        data.address = addData[0].address
+        data.price = pData[0].cost*orData[i].qty
+        dict.push(data)
+    }
+
+    res.send(JSON.stringify(dict));
+
+})
+
+server.post('/cancelOrder', async (req, res)=>{
+    await Order.updateOne({_id : req.body.oid}, {status: "Cancelled"})
+    res.send({code: 'ok'})
+})
+
 server.listen(process.env.PORT, ()=>{
     console.log(`server started on ${process.env.PORT}`);
 })
