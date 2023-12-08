@@ -269,6 +269,11 @@ server.post('/cancelOrder', async (req, res)=>{
     res.send({code: 'ok'})
 })
 
+server.post('/delOrder', async (req, res)=>{
+    await Order.deleteOne({_id: req.body.oid})
+    res.send({code: 'ok'})
+})
+
 server.listen(process.env.PORT, ()=>{
     console.log(`server started on ${process.env.PORT}`);
 })
