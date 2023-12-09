@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const dotenv = require("dotenv").config();
 
+const stripe = require('stripe')(process.env.STRIPE_SK_KEY);
 const server = express()
 server.use(cors())
 server.use(bodyParser.json())
@@ -49,7 +50,8 @@ const orderSchema = new mongoose.Schema({
     sid: String,
     qty: Number,
     status: String,
-    address: String
+    address: String,
+    paymentIntent: String
 })
 
 const Order = mongoose.model('orders', orderSchema);
@@ -213,6 +215,7 @@ server.post('/addOrder', async (req, res)=>{
         order.qty = items[key]
         order.status = "Pending"
         order.address = req.body.address
+        order.paymentIntent = req.body.paymentIntent
         order.save()
         oderIds.push(order._id)
     }
@@ -291,6 +294,43 @@ server.post('/delOrder', async (req, res)=>{
 server.post('/getSeller', async (req, res)=>{
     const seller = await Seller.find({id: req.body.sid})
     res.send(seller[0])
+})
+
+server.get('/stripeConfig', async (req, res)=>{
+    res.send({key: process.env.STRIPE_PU_KEY})
+})
+
+server.post('/createPaymentIntent', async (req, res)=>{
+    const user = await User.find({_id: req.body.uid})
+    var items = {};
+    var amount = 0;
+    var cartDet = user[0].cart
+    for(var i=0; i<cartDet.length; i++){
+        var currId = cartDet[i]._id
+        if(items[currId]){
+            items[currId] += 1
+        }
+        else{
+            items[currId] = 1
+        }
+    }
+
+    for(var key in items){
+        const item = await Items.find({_id: key})
+        amount += item[0].cost*items[key]
+    }
+    try{
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: 100*100,
+            currency: 'inr',
+            automatic_payment_methods: {
+                enabled: true,
+            },
+        });
+        res.send({clientSecret: paymentIntent.client_secret})
+    }catch(e){
+        console.log(e)
+    }
 })
 
 server.listen(process.env.PORT, ()=>{
