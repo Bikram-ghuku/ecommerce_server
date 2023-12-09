@@ -16,7 +16,8 @@ const userSchema = new mongoose.Schema({
     password: String,
     cart: Array,
     type: String,
-    address: Array
+    address: Array,
+    allow: Boolean
 });
 
 const User = mongoose.model('User', userSchema)
@@ -75,6 +76,7 @@ server.post('/register', async (req, res)=>{
         user.cart = []
         user.type = req.body.type
         user.address = []
+        user.allow = true
         user.save()
         if(req.body.type == "Seller"){
             let seller = new Seller();
@@ -95,7 +97,11 @@ server.post('/login', async (req, res)=>{
     const doc = await User.find({email: req.body.email, password: req.body.pswd})
     var resData = doc[0]
     if(resData){
-        res.send({name:resData.name, email:resData.email, code:'ok', type: resData.type, id: resData._id})
+        if(!resData.allow){
+            res.send({code: 'Account blocked by admin, please contact admin for more details'})
+        }else{
+            res.send({name:resData.name, email:resData.email, code:'ok', type: resData.type, id: resData._id})
+        }
     }
     else{
         res.send({code:'incorrect username or password'})
