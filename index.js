@@ -36,6 +36,8 @@ const Items = mongoose.model('items', itemsSchema);
 const sellerSchema = new mongoose.Schema({
     name: String,
     id: String,
+    totSales: Number,
+    totOrders: Number
 })
 
 const Seller = mongoose.model('sellers', sellerSchema);
@@ -172,7 +174,7 @@ server.post('/removeCart', async (req, res)=>{
 })
 
 server.post('/getProducts', async (req, res)=>{
-    const data = await Items.find({seller: req.body.uid})
+    const data = await Items.find({seller: req.body.sid})
     res.send(JSON.stringify(data));
 })
 
@@ -193,6 +195,10 @@ server.post('/addOrder', async (req, res)=>{
     for(var key in items){
         let order = new Order();
         const item = await Items.find({_id: key})
+        const seller = await Seller.find({id: item[0].seller})
+        seller[0].totSales += item[0].cost*items[key]
+        seller[0].totOrders += 1
+        await Seller.updateOne({id: item[0].seller}, {totSales: seller[0].totSales, totOrders: seller[0].totOrders})
         order.sid = item[0].seller
         order.uid = req.body.uid
         order.pid = key
