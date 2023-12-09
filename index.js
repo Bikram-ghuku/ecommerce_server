@@ -80,6 +80,8 @@ server.post('/register', async (req, res)=>{
             let seller = new Seller();
             seller.name = req.body.name
             seller.id = user._id
+            seller.totSales = 0
+            seller.totOrders = 0
             seller.save()
         }
         res.send({code: 'ok'})
@@ -278,6 +280,11 @@ server.post('/cancelOrder', async (req, res)=>{
 server.post('/delOrder', async (req, res)=>{
     await Order.deleteOne({_id: req.body.oid})
     res.send({code: 'ok'})
+})
+
+server.post('/getSeller', async (req, res)=>{
+    const seller = await Seller.find({id: req.body.sid})
+    res.send(seller[0])
 })
 
 server.listen(process.env.PORT, ()=>{
