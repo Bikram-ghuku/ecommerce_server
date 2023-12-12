@@ -333,6 +333,31 @@ server.post('/createPaymentIntent', async (req, res)=>{
     }
 })
 
+server.post('/getBill', async (req, res)=>{
+    const odet = await Order.find({_id: req.body.oid});
+    const pData = await Items.find({_id: odet[0].pid});
+    const addData = await Address.find({_id: odet[0].address});
+    const seller = await Seller.find({id: odet[0].sid})
+    const buy = await User.find({_id: odet[0].uid})
+    var data = {}
+    data._id = odet[0]._id
+    data.qty = odet[0].qty
+    data.status = odet[0].status
+    data.pdtName = pData[0].pdtName
+    data.desc = pData[0].desc
+    data.address = addData[0].address
+    data.pin = addData[0].pin
+    data.city = addData[0].city
+    data.state = addData[0].state
+    data.country = addData[0].country
+    data.phone = addData[0].phone
+    data.price = pData[0].cost
+    data.sellerName = seller[0].name
+    data.buyerName = buy[0].name
+    data.paymentId = odet[0].paymentIntent
+    res.send(data)
+})
+
 server.listen(process.env.PORT, ()=>{
     console.log(`server started on ${process.env.PORT}`);
 })
