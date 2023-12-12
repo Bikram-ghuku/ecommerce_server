@@ -237,6 +237,7 @@ server.post('/getOrders', async (req, res)=>{
         data.pdtName = pData[0].pdtName
         data.user = uData[0].name
         data.address = addData[0].address
+        data.paymentId = OrData[i].paymentIntent
         dict.push(data)
     }
     
