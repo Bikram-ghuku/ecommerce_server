@@ -358,6 +358,11 @@ server.post('/getBill', async (req, res)=>{
     res.send(data)
 })
 
+server.post('/updateOrder', async (req, res)=>{
+    await Order.updateOne({_id : req.body.oid}, {status: req.body.status})
+    res.send({code: 'ok'})
+})
+
 server.listen(process.env.PORT, ()=>{
     console.log(`server started on ${process.env.PORT}`);
 })
