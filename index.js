@@ -126,8 +126,14 @@ server.post('/addCartItems', async(req, res) => {
     const doc = await User.find({_id: req.body.uid})
     var cartDet = doc[0].cart
     const itemDoc = await Items.find({_id: req.body.pid});
-    cartDet.push(itemDoc[0])
-    await User.updateOne({_id : req.body.uid}, {cart: cartDet})
+    if(req.body.uid != itemDoc[0].seller){
+        cartDet.push(itemDoc[0])
+        await User.updateOne({_id : req.body.uid}, {cart: cartDet})
+        res.send({code: 'ok'})
+    }else{
+        res.send({code: 'You cannot add your own product to cart'})
+    }
+    
 })
 
 server.get('/seller', async (req, res)=>{
