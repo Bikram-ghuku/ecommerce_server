@@ -258,6 +258,7 @@ server.post('/addProduct', async (req, res)=>{
     item.desc = req.body.desc
     item.cost = req.body.cost
     item.opts = []
+    item.rating = 0
     item.dispType = req.body.dispType
     item.seller = req.body.uid
     item.save()
