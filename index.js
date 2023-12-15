@@ -30,7 +30,8 @@ const itemsSchema = new mongoose.Schema({
     cost: Number,
     opts: Array,
     dispType: String,
-    seller: String
+    seller: String,
+    rating: Number
 })
 
 const Items = mongoose.model('items', itemsSchema);
