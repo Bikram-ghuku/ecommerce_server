@@ -1,14 +1,14 @@
-! MERN ecommerce backend
+# MERN ecommerce backend
 
-! Run with code
+# Run with code
 
-!! Clone the repo with
+## Clone the repo with
 
 ```shell
 git clone https://github.com/Bikram-ghuku/ecommerce_server
 ```
 
-!! Make a .env file
+## Make a .env file
 
 ```.env
 PORT = <PORT_FOR_SERVER>
@@ -17,15 +17,15 @@ STRIPE_SK_KEY = <STRIPE_SECRET_KEY>
 STRIPE_PU_KEY = <STRIPE_PUBLIC_KEY>
 ```
 
-!! Run the server
+## Run the server
 
 ```shell
 npm start
 ```
 
-! Run with docker
+# Run with docker
 
-!! Pull the image
+## Pull the image
 
 ```shell
 docker pull bikramghuku05/ecommerce_server
