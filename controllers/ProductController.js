@@ -1,4 +1,4 @@
-const Items = require('../models/Items');
+const Items = require('../models/ItemModel');
 
 const getProductes = async (req, res)=>{
     const data = await Items.find({seller: req.body.sid})
