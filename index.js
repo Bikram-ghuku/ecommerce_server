@@ -12,9 +12,10 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('DataBase Connected!'));
 
 const userRouter = require('./routes/UserRoutes');
+const productRouter = require('./routes/ProductRoutes');
 
 server.use('/user', userRouter)
-
+server.use('/products', productRouter)
 
 server.get('/items', async (req, res)=>{
     const data = await Items.find({dispType :{$not: {$eq: "private"}}})
