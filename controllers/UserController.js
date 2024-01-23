@@ -23,10 +23,12 @@ const register = async (req, res)=>{
                 seller.totOrders = 0
                 seller.save()
             }
-            res.status(201).send({code: 'ok'})
-        }).catch(err => {
-            res.status(500).send({code: 'Internal Server Error'})
-        });
+            if(!err){
+                res.status(201).send({code: 'ok'})
+            }else{
+                res.status(500).send({code: 'Internal Server Error'})
+            }
+        })
     }
     else{
         res.status(409).send({code: 'Account Already Present! Use a different account'})
@@ -34,21 +36,24 @@ const register = async (req, res)=>{
 }
 
 const login = async (req, res)=>{
-    const doc = await User.find({email: req.body.email, password: req.body.pswd})
+    const doc = await User.find({email: req.body.email})
     var resData = doc[0]
     if(resData){
         if(!resData.allow){
             res.status(403).send({code: 'Account blocked by admin, please contact admin for more details'})
         }else{
             bcrypt.compare(req.body.pswd, resData.password, function(err, result) {
-                res.status(200).send({name:resData.name, email:resData.email, code:'ok', type: resData.type, id: resData._id})
-            }).catch(err => {
-                res.status(500).send({code: 'Internal Server Error'})
-            });
+                
+                if(!err){
+                    res.status(200).send({name:resData.name, email:resData.email, code:'ok', type: resData.type, id: resData._id})
+                }else{
+                    res.status(500).send({code: 'Internal Server Error'})
+                }
+            })
         }
     }
     else{
-        res.sattus(401).send({code:'incorrect username or password'})
+        res.status(401).send({code:'incorrect username or password'})
     }
 }
 

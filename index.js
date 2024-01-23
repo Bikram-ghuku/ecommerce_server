@@ -11,105 +11,10 @@ server.use(bodyParser.json())
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('DataBase Connected!'));
 
-const userSchema = new mongoose.Schema({
-    name: String,
-    email: String,
-    password: String,
-    cart: Array,
-    type: String,
-    address: Array,
-    allow: Boolean
-});
+const userRouter = require('./routes/UserRoutes');
 
-const User = mongoose.model('User', userSchema)
+server.use('/user', userRouter)
 
-const itemsSchema = new mongoose.Schema({
-    pdtName: String,
-    img: String,
-    desc: String,
-    cost: Number,
-    opts: Array,
-    dispType: String,
-    seller: String,
-    rating: Number
-})
-
-const Items = mongoose.model('items', itemsSchema);
-
-const sellerSchema = new mongoose.Schema({
-    name: String,
-    id: String,
-    totSales: Number,
-    totOrders: Number
-})
-
-const Seller = mongoose.model('sellers', sellerSchema);
-
-const orderSchema = new mongoose.Schema({
-    uid: String,
-    pid: String,
-    sid: String,
-    qty: Number,
-    status: String,
-    address: String,
-    paymentIntent: String
-})
-
-const Order = mongoose.model('orders', orderSchema);
-
-const addressSchema = new mongoose.Schema({
-    uid: String,
-    address: String,
-    pin: String,
-    city: String,
-    state: String,
-    country: String,
-    phone: String
-})
-
-const Address = mongoose.model('address', addressSchema);
-
-server.post('/register', async (req, res)=>{
-    const doc = await User.find({email: req.body.email})
-    if(!doc[0]){
-        let user = new User();
-        user.name = req.body.name
-        user.email = req.body.email
-        user.password = req.body.pswd
-        user.cart = []
-        user.type = req.body.type
-        user.address = []
-        user.allow = true
-        user.save()
-        if(req.body.type == "Seller"){
-            let seller = new Seller();
-            seller.name = req.body.name
-            seller.id = user._id
-            seller.totSales = 0
-            seller.totOrders = 0
-            seller.save()
-        }
-        res.send({code: 'ok'})
-    }
-    else{
-        res.send({code: 'Account Already Present! Use a different account'})
-    }
-})
-
-server.post('/login', async (req, res)=>{
-    const doc = await User.find({email: req.body.email, password: req.body.pswd})
-    var resData = doc[0]
-    if(resData){
-        if(!resData.allow){
-            res.send({code: 'Account blocked by admin, please contact admin for more details'})
-        }else{
-            res.send({name:resData.name, email:resData.email, code:'ok', type: resData.type, id: resData._id})
-        }
-    }
-    else{
-        res.send({code:'incorrect username or password'})
-    }
-})
 
 server.get('/items', async (req, res)=>{
     const data = await Items.find({dispType :{$not: {$eq: "private"}}})
