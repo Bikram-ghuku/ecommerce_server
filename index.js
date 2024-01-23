@@ -8,19 +8,12 @@ const stripe = require('stripe')(process.env.STRIPE_SK_KEY);
 const server = express()
 server.use(cors())
 server.use(bodyParser.json())
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('DataBase Connected!'));
 
 const userRouter = require('./routes/UserRoutes');
 const productRouter = require('./routes/ProductRoutes');
 
 server.use('/user', userRouter)
 server.use('/products', productRouter)
-
-server.get('/items', async (req, res)=>{
-    const data = await Items.find({dispType :{$not: {$eq: "private"}}})
-    res.send(JSON.stringify(data));
-})
 
 server.post('/cartItems', async (req, res)=>{
     const doc = await User.find({_id: req.body.id})
@@ -96,11 +89,6 @@ server.post('/removeCart', async (req, res)=>{
     res.send({code: 'ok'})
 })
 
-server.post('/getProducts', async (req, res)=>{
-    const data = await Items.find({seller: req.body.sid})
-    res.send(JSON.stringify(data));
-})
-
 server.post('/addOrder', async (req, res)=>{
     const user = await User.find({_id: req.body.uid})
     var items = {};
@@ -157,24 +145,6 @@ server.post('/getOrders', async (req, res)=>{
     res.send(JSON.stringify(dict));
 })
 
-server.post('/addProduct', async (req, res)=>{
-    let item = new Items();
-    item.pdtName = req.body.pdtName
-    item.img = req.body.img
-    item.desc = req.body.desc
-    item.cost = req.body.cost
-    item.opts = []
-    item.rating = 0
-    item.dispType = req.body.dispType
-    item.seller = req.body.uid
-    item.save()
-    res.send({code: 'ok'})
-})
-
-server.post('/delProduct', async (req, res)=>{
-    await Items.deleteOne({_id: req.body.pid})
-    res.send({code: 'ok'})
-})
 
 server.post('/myOrders', async (req, res)=>{
     const orData = await Order.find({uid: req.body.uid})
