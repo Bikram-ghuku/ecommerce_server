@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-
+const dotenv = require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SK_KEY);
 const server = express()
 server.use(cors())
@@ -12,34 +12,14 @@ const productRouter = require('./routes/ProductRoutes');
 const sellerRouter = require('./routes/SellerRoutes');
 const orderRouter = require('./routes/OrderRouter');
 const cartRouter = require('./routes/CartRouter');
+const addressRouter = require('./routes/AddressRouter');
 
 server.use('/user', userRouter)
 server.use('/products', productRouter)
 server.use('/seller', sellerRouter)
 server.use('/order', orderRouter)
 server.use('/cart', cartRouter)
-
-server.post('/addAddress', async (req, res)=>{
-    let address = new Address();
-    address.uid = req.body.uid
-    address.address = req.body.address
-    address.pin = req.body.pincode
-    address.city = req.body.city
-    address.state = req.body.state
-    address.country = req.body.country
-    address.phone = req.body.phone
-    res.send({code: 'ok'})
-    const user = await User.find({_id: req.body.uid})
-    var addressAr = user[0].address
-    addressAr.push(address._id)
-    address.save()
-    await User.updateOne({_id : req.body.uid}, {address: addressAr})
-})
-
-server.post('/getAddress', async (req, res)=>{
-    const doc = await Address.find({uid: req.body.uid})
-    res.send(doc)
-})
+server.use('/address', addressRouter)
 
 server.get('/stripeConfig', async (req, res)=>{
     res.send({key: process.env.STRIPE_PU_KEY})
