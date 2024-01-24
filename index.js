@@ -1,8 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-const dotenv = require("dotenv").config();
 
 const stripe = require('stripe')(process.env.STRIPE_SK_KEY);
 const server = express()
