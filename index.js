@@ -12,31 +12,14 @@ server.use(bodyParser.json())
 const userRouter = require('./routes/UserRoutes');
 const productRouter = require('./routes/ProductRoutes');
 const sellerRouter = require('./routes/SellerRoutes');
+const orderRouter = require('./routes/OrderRouter');
+const cartRouter = require('./routes/CartRouter');
 
 server.use('/user', userRouter)
 server.use('/products', productRouter)
 server.use('/seller', sellerRouter)
-
-server.post('/cartItems', async (req, res)=>{
-    const doc = await User.find({_id: req.body.id})
-    if(doc[0]){
-        res.send(doc[0].cart)
-    }
-})
-
-server.post('/addCartItems', async(req, res) => {
-    const doc = await User.find({_id: req.body.uid})
-    var cartDet = doc[0].cart
-    const itemDoc = await Items.find({_id: req.body.pid});
-    if(req.body.uid != itemDoc[0].seller){
-        cartDet.push(itemDoc[0])
-        await User.updateOne({_id : req.body.uid}, {cart: cartDet})
-        res.send({code: 'ok'})
-    }else{
-        res.send({code: 'You cannot add your own product to cart'})
-    }
-    
-})
+server.use('/order', orderRouter)
+server.use('/cart', cartRouter)
 
 server.post('/addAddress', async (req, res)=>{
     let address = new Address();
@@ -58,115 +41,6 @@ server.post('/addAddress', async (req, res)=>{
 server.post('/getAddress', async (req, res)=>{
     const doc = await Address.find({uid: req.body.uid})
     res.send(doc)
-})
-
-server.post('/removeCart', async (req, res)=>{
-    const doc = await User.find({_id: req.body.uid})
-    var cartDet = doc[0].cart
-    var newCart = []
-    var flag = false
-    for(let i=0; i<cartDet.length; i++){
-        if(!flag){
-            if(cartDet[i]._id != req.body.pid){
-                newCart.push(cartDet[i])
-            }
-            else{
-                flag = true
-            }
-        }
-        else{
-            newCart.push(cartDet[i])
-        }
-    }
-    await User.updateOne({_id : req.body.uid}, {cart: newCart})
-    res.send({code: 'ok'})
-})
-
-server.post('/addOrder', async (req, res)=>{
-    const user = await User.find({_id: req.body.uid})
-    var items = {};
-    var cartDet = user[0].cart
-    for(var i=0; i<cartDet.length; i++){
-        var currId = cartDet[i]._id
-        if(items[currId]){
-            items[currId] += 1
-        }
-        else{
-            items[currId] = 1
-        }
-    }
-    var oderIds = []
-    for(var key in items){
-        let order = new Order();
-        const item = await Items.find({_id: key})
-        const seller = await Seller.find({id: item[0].seller})
-        seller[0].totSales += item[0].cost*items[key]
-        seller[0].totOrders += 1
-        await Seller.updateOne({id: item[0].seller}, {totSales: seller[0].totSales, totOrders: seller[0].totOrders})
-        order.sid = item[0].seller
-        order.uid = req.body.uid
-        order.pid = key
-        order.qty = items[key]
-        order.status = "Pending"
-        order.address = req.body.address
-        order.paymentIntent = req.body.paymentIntent
-        order.save()
-        oderIds.push(order._id)
-    }
-    await User.updateOne({_id : req.body.uid}, {cart: []})
-    res.send({code: 'ok', order: oderIds})
-})
-
-server.post('/getOrders', async (req, res)=>{
-    const OrData = await Order.find({sid: req.body.uid})
-    var dict = []
-    for(var i=0; i<OrData.length; i++){
-        const pData = await Items.find({_id: OrData[i].pid})
-        const uData = await User.find({_id: OrData[i].uid})
-        const addData = await Address.find({_id: OrData[i].address})
-        var data = {}
-        data._id = OrData[i]._id
-        data.qty = OrData[i].qty
-        data.status = OrData[i].status
-        data.pdtName = pData[0].pdtName
-        data.user = uData[0].name
-        data.address = addData[0].address
-        data.paymentId = OrData[i].paymentIntent
-        dict.push(data)
-    }
-    
-    res.send(JSON.stringify(dict));
-})
-
-
-server.post('/myOrders', async (req, res)=>{
-    const orData = await Order.find({uid: req.body.uid})
-    var dict = []
-    for(var i=0; i<orData.length; i++){
-        const pData = await Items.find({_id: orData[i].pid})
-        const addData = await Address.find({_id: orData[i].address})
-        var data = {}
-        data._id = orData[i]._id
-        data.qty = orData[i].qty
-        data.status = orData[i].status
-        data.pdtName = pData[0].pdtName
-        data.address = addData[0].address
-        data.price = pData[0].cost*orData[i].qty
-        dict.push(data)
-    }
-
-    res.send(JSON.stringify(dict));
-
-})
-
-server.post('/cancelOrder', async (req, res)=>{
-    await Order.updateOne({_id : req.body.oid}, {status: "Cancelled"})
-    res.send({code: 'ok'})
-})
-
-server.post('/delOrder', async (req, res)=>{
-    await Order.deleteOne({_id: req.body.oid})
-    res.send({code: 'ok'})
 })
 
 server.get('/stripeConfig', async (req, res)=>{
@@ -229,11 +103,6 @@ server.post('/getBill', async (req, res)=>{
     data.buyerName = buy[0].name
     data.paymentId = odet[0].paymentIntent
     res.send(data)
-})
-
-server.post('/updateOrder', async (req, res)=>{
-    await Order.updateOne({_id : req.body.oid}, {status: req.body.status})
-    res.send({code: 'ok'})
 })
 
 server.listen(process.env.PORT, ()=>{
