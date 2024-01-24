@@ -22,6 +22,6 @@ server.use('/cart', cartRouter)
 server.use('/address', addressRouter)
 server.use('/payment', paymentRouter)
 
-server.listen(process.env.PORT, ()=>{
-    console.log(`server started on ${process.env.PORT}`);
+server.listen(process.env.PORT || 8080, ()=>{
+    console.log(`server started on ${process.env.PORT || 8080}`);
 })
