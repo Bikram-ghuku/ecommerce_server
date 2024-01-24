@@ -2,6 +2,7 @@ const Order = require('../models/OrdersModel')
 const User = require('../models/UserModel')
 const Seller = require('../models/SellerModel')
 const Items = require('../models/ItemModel')
+const Address = require('../models/AddressModel')
 
 const getOrders = async (req, res)=>{
     const OrData = await Order.find({sid: req.body.uid})
