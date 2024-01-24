@@ -11,9 +11,11 @@ server.use(bodyParser.json())
 
 const userRouter = require('./routes/UserRoutes');
 const productRouter = require('./routes/ProductRoutes');
+const sellerRouter = require('./routes/SellerRoutes');
 
 server.use('/user', userRouter)
 server.use('/products', productRouter)
+server.use('/seller', sellerRouter)
 
 server.post('/cartItems', async (req, res)=>{
     const doc = await User.find({_id: req.body.id})
@@ -34,15 +36,6 @@ server.post('/addCartItems', async(req, res) => {
         res.send({code: 'You cannot add your own product to cart'})
     }
     
-})
-
-server.get('/seller', async (req, res)=>{
-    const data = await Seller.find({});
-    const dict = {}
-    for(let i=0; i<data.length; i++){
-        dict[data[i].id] = data[i].name
-    }
-    res.send(JSON.stringify(dict));
 })
 
 server.post('/addAddress', async (req, res)=>{
@@ -174,11 +167,6 @@ server.post('/cancelOrder', async (req, res)=>{
 server.post('/delOrder', async (req, res)=>{
     await Order.deleteOne({_id: req.body.oid})
     res.send({code: 'ok'})
-})
-
-server.post('/getSeller', async (req, res)=>{
-    const seller = await Seller.find({id: req.body.sid})
-    res.send(seller[0])
 })
 
 server.get('/stripeConfig', async (req, res)=>{
