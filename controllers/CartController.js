@@ -1,4 +1,5 @@
 const User = require('../models/UserModel')
+const Items = require('../models/ItemModel')
 
 const cartItems =  async (req, res)=>{
     const doc = await User.find({_id: req.body.id})
