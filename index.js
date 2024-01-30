@@ -13,6 +13,7 @@ const orderRouter = require('./routes/OrderRouter');
 const cartRouter = require('./routes/CartRouter');
 const addressRouter = require('./routes/AddressRouter');
 const paymentRouter = require('./routes/PaymentsRouter');
+const metricsRouter = require('./routes/MetricsRoutes')
 
 server.use('/user', userRouter)
 server.use('/products', productRouter)
@@ -21,6 +22,7 @@ server.use('/order', orderRouter)
 server.use('/cart', cartRouter)
 server.use('/address', addressRouter)
 server.use('/payment', paymentRouter)
+server.use('/', metricsRouter)
 
 server.listen(process.env.PORT || 8080, ()=>{
     console.log(`server started on ${process.env.PORT || 8080}`);
