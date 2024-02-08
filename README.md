@@ -28,7 +28,7 @@ npm start
 ## Pull the image
 
 ```shell
-docker pull bikramghuku05/ecommerce_server
+docker pull ghcr.io/bikram-ghuku/ecommerce_server:deploy
 ```
 
 ```shell
