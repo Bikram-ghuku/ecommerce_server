@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt')
 const User = require('../models/UserModel')
+const Seller = require('../models/SellerModel')
 
 
 const register = async (req, res)=>{
