@@ -46,7 +46,11 @@ const login = async (req, res)=>{
             bcrypt.compare(req.body.pswd, resData.password, function(err, result) {
                 
                 if(!err){
-                    res.status(200).send({name:resData.name, email:resData.email, code:'ok', type: resData.type, id: resData._id})
+                    if(result){
+                        res.status(200).send({name:resData.name, email:resData.email, code:'ok', type: resData.type, id: resData._id})
+                    }else{
+                        res.status(401).send({code:'incorrect username or password'})
+                    }
                 }else{
                     res.status(500).send({code: 'Internal Server Error'})
                 }
