@@ -1,5 +1,7 @@
 # MERN ecommerce backend
 
+[![CodeQL](https://github.com/Bikram-ghuku/ecommerce_server/actions/workflows/codeql.yml/badge.svg)](https://github.com/Bikram-ghuku/ecommerce_server/actions/workflows/codeql.yml)
+
 # Run with code
 
 ## Clone the repo with
