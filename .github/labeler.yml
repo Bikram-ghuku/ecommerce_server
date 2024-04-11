@@ -1,0 +1,18 @@
+labels:
+  - name: bug
+    description: A bug in the code
+    match:
+      files:
+        - "*.js"
+
+  - name: enhancement
+    description: An enhancement to the code
+    match:
+      files:
+        - "*.js"
+
+  - name: documentation
+    description: A change to the documentation
+    match:
+      files:
+        - "*.md"
